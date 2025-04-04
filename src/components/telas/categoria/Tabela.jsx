@@ -4,13 +4,13 @@ import Alert from "../../comuns/Alert"
 import { Table, Button } from "react-bootstrap"
 
 function Tabela() {
-    const { alerta, listaObj, remover } = useContext(CategoriaContext)
+    const { alerta, listaObj, remover, novoObjeto, editarObjeto } = useContext(CategoriaContext)
 
     return (
         <div style = {{padding:'20px'}}>
             <h1>Categorias</h1>
             <Alert alerta={alerta}/>
-            <Button variant="primary"> <i class="bi bi-file-earmark-plus"></i> Novo</Button>
+            <Button variant="primary" onClick={()=>novoObjeto()}> <i class="bi bi-file-earmark-plus"></i> Novo</Button>
             {listaObj.length === 0 && <h1>Nenhum registro encontrado</h1>}
             {
                 listaObj.length >  0 && 
@@ -33,7 +33,7 @@ function Tabela() {
                             listaObj.map((objeto) => (
                                 <tr key={objeto.codigo}>
                                     <td align="center">
-                                        <Button variant="info">
+                                        <Button variant="info" onClick={() => editarObjeto(objeto.codigo)}>
                                             <i class="bi bi-pencil-square"></i> Editar
                                         </Button>
                                         <Button variant="danger" onClick={() => remover(objeto.codigo)}> 
