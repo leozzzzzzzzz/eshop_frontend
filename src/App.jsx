@@ -8,6 +8,7 @@ import Menu from './components/Menu'
 import Home from './components/telas/Home'
 import About from "./components/telas/About";
 import Categoria from "./components/telas/categoria/Categoria"
+import Produto from "./components/telas/produto/Produto"
 import './App.css';
 
 const router = createBrowserRouter([
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
       {
         path: "/categorias",
         element: <Categoria/>
+      },
+      {
+        path: "/produtos",
+        element: <Produto/>
       }
     ]
   }

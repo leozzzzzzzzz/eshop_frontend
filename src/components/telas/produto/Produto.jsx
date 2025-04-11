@@ -1,30 +1,39 @@
 import { useState, useEffect} from "react";
-import CategoriaContext from "./CategoriaContext"
-import { getCategoriaPorCodigoAPI, getCategoriasAPI, cadastraCategoriaAPI, deleteCategoriaPorCodigoAPI} from "../../../services/CategoriaServico"
+import ProdutoContext from "./ProdutoContext"
+import { getProdutoPorCodigoAPI, getProdutosAPI, cadastraProdutoAPI, deleteProdutoPorCodigoAPI} from "../../../services/ProdutoServico"
 import Tabela from "./Tabela";
 import Formulario from "./Formulario";
 import Carregando from '../../comuns/Carregando';
+import { getCategoriasAPI } from "../../../services/CategoriaServico";
 
-function Categoria() {
+function Produto() {
     const [alerta, setAlerta] = useState({"status" : "", message : ""})
     const [listaObj, setListaObj] = useState([])
     const [carregando, setCarregando] = useState(true);
 
-    const recuperaCategorias = async () => {
+    const [listaCateg, setListaCateg] = useState([])
+
+    const recuperaProdutos = async () => {
         setCarregando(true);
-        setListaObj(await getCategoriasAPI());
+        setListaObj(await getProdutosAPI());
         setCarregando(false);
     }
 
+    const recuperaCategorias = async () => {
+        setListaCateg(await getCategoriasAPI());
+    }
+
+
     const remover = async codigo => {
         if(window.confirm("Deseja remover este objeto?")){
-            let retornoAPI = await deleteCategoriaPorCodigoAPI(codigo)
+            let retornoAPI = await deleteProdutoPorCodigoAPI(codigo)
             setAlerta({status : retornoAPI.status, message : retornoAPI.message})
-            recuperaCategorias()
+            recuperaProdutos()
         }
     }
 
     useEffect(() => {
+        recuperaProdutos()
         recuperaCategorias()
     },[])
 
@@ -33,7 +42,7 @@ function Categoria() {
     const [exibirForm, setExibirForm] = useState(false);
 	
     const [objeto, setObjeto] = useState({
-        codigo: "", nome: "", descricao: "", sigla: ""
+        codigo: "", nome: "", descricao: "", quantidade_estoque: "", valor: "", ativo: "", data_cadastro: new Date().toISOString().slice(0,10), categoria: ""
     })    
 
     const novoObjeto = () => {
@@ -41,13 +50,19 @@ function Categoria() {
         setAlerta({ status: "", message: "" });
         setObjeto({
             codigo: 0,
-            nome: ""
+            nome: "",
+            descricao: "",
+            quantidade_estoque: "",
+            valor: "",
+            ativo: "",
+            data_cadastro: new Date().toISOString().slice(0, 10),
+            categoria: ""
         });
 		setExibirForm(true);
     }
 
     const editarObjeto = async codigo => {
-        setObjeto(await getCategoriaPorCodigoAPI(codigo))
+        setObjeto(await getProdutoPorCodigoAPI(codigo))
         setEditar(true);
         setAlerta({ status: "", message: "" });
 		setExibirForm(true);
@@ -57,7 +72,7 @@ function Categoria() {
         e.preventDefault();
         const metodo = editar ? "PUT" : "POST";
         try {
-            let retornoAPI = await cadastraCategoriaAPI(objeto, metodo);
+            let retornoAPI = await cadastraProdutoAPI(objeto, metodo);
             setAlerta({ status: retornoAPI.status, message: retornoAPI.message });
             setObjeto(retornoAPI.objeto);
             if (!editar) {
@@ -66,7 +81,7 @@ function Categoria() {
         } catch (err) {
             console.error(err.message);
         }
-        recuperaCategorias();
+        recuperaProdutos();
     }
 
     const handleChange = (e) => {
@@ -76,10 +91,10 @@ function Categoria() {
     }
 
     return (
-        <CategoriaContext.Provider value = {
+        <ProdutoContext.Provider value = {
             {
                 alerta, listaObj, remover, objeto, editarObjeto,
-                acaoCadastrar, handleChange, novoObjeto, exibirForm, setExibirForm
+                acaoCadastrar, handleChange, novoObjeto, exibirForm, setExibirForm, listaCateg
             }
         }> 
             <Carregando carregando={carregando}>
@@ -87,9 +102,9 @@ function Categoria() {
             </Carregando>
             
             <Formulario/>
-        </CategoriaContext.Provider>
+        </ProdutoContext.Provider>
     )
 
 }
 
-export default Categoria
+export default Produto
